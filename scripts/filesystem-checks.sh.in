@@ -31,7 +31,7 @@ fi
 ret=0
 grep -q '^hosts: files mymachines myhostname dns$' /etc/nsswitch.conf || ret=$?
 if [ "$ret" != 0 ]; then
-  log error "/etc/nsswitch.conf: hosts should be: files mymachines dns"
+  log error "/etc/nsswitch.conf: hosts should be: files mymachines myhostname dns"
   failures=$((failures+1))
 fi
 
