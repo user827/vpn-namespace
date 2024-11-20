@@ -18,6 +18,7 @@ pkgsysconfdir = ${sysconfdir}/${prog}
 
 #TODO actually use these
 openvpnuser = openvpn
+openvpngroup = network
 #TODO or use uid?
 openvpniface = tun_vpn
 netnsentercmd = /usr/bin/ip netns exec $(vpnnetns)
@@ -123,6 +124,7 @@ substitutions = \
 		'|netnsentercmd=$(netnsentercmd)|' \
 		'|openvpniface=$(openvpniface)|' \
 		'|openvpnuser=$(openvpnuser)|' \
+		'|openvpngroup=$(openvpngroup)|' \
 		'|openvpnrundir=/run/openvpn|' \
 		'|vpnnetns=$(vpnnetns)|'
 

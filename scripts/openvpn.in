@@ -22,7 +22,7 @@ trap 'echo "<3>control: sigterm"' TERM
 trap 'echo "<5>subcontrol: openvpn sigterm"' TERM
 # is reset in subshell!
 ret=0
-openvpn --config vpnns.conf --suppress-timestamps --user @openvpnuser@ --group network --writepid "$rundir"/openvpn-vpnns.pid || ret=$?
+openvpn --config vpnns.conf --suppress-timestamps --user @openvpnuser@ --group @openvpngroup@ --writepid "$rundir"/openvpn-vpnns.pid || ret=$?
 # need to remove so systemd does not reed pids fom another instance
 rm -f "$rundir"/openvpn-control.pid
 
