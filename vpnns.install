@@ -20,7 +20,7 @@ OVERVIEW:
 - configure /etc/openvpn/vpnns.conf
     - Merge remote settings to the configuration
 - enable
-     systemctl enable openvpn-vpnns.service
+     systemctl enable --now openvpn-vpnns.service
 
 
 netutils

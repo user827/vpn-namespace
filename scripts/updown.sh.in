@@ -46,26 +46,22 @@ up() {
     init)
       #TODO ensuring we fail if we restart
       if [ "$(id -u)" != 0 ]; then
-        "$UNPRIV_IP" address flush dev "$dev"
-        "$UNPRIV_IP" link set dev "$dev" down
+        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev"
+        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
         fail "Init after uid/gid downgrade."
       fi
 
       #kill on BUG, TODO del tuntap
-      addrs=$(ip -4 address show dev "$dev")
+      addrs=$("$UNPRIV_IP" -netns "$ns" -4 address show dev "$dev")
       if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
-        ip address flush dev "$dev"
-        ip link set dev "$dev" down
+        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev"
+        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
         fail "Not uninit tap BUG"
         #Kill or Restart by init
       fi
 
 
-      "$UNPRIV_IP" link set dev "$dev" netns "$ns"
-      # Settings have been lost on change to namespace?
       # TODO check the namespace has corect sysctls
-      # sync with openvpn-tuntap.service.in
-      "$UNPRIV_IP" netns exec "$ns" @BINDIR@/sysctl -w "net.ipv6.conf.$dev.disable_ipv6=1"
       "$UNPRIV_IP" -netns "$ns" link set dev "$dev" up mtu "$tun_mtu"
       if [ -n "${ifconfig_broadcast:-}" ]; then
         "$UNPRIV_IP" -4 -netns "$ns" addr add "$ifconfig_local/${ifconfig_netmask:-30}" brd "$ifconfig_broadcast" dev "$dev"
@@ -91,7 +87,7 @@ down() {
   case "$start" in
     init)
       "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
-      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down netns "$$"
+      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
       ;;
     *)
        #ENSURE no up-restart
@@ -104,8 +100,7 @@ route_up() {
   trap exit_func_term 0
   [ $# -eq 0 ] || fail "Args $# != 0"
 
-  # NOTE default should be last so that rgw connections go to blackhole that
-  # should go to specific routes but that are not setup yet
+  # NOTE default should be the last
   "$UNPRIV_IP" -4 -netns "$ns" route add default via "$route_vpn_gateway" dev "$dev" proto static
 
   for f in "$HOOKDIR"/route_up_hooks/*; do

@@ -7,14 +7,6 @@ mkfifo -m666 "$rundir"/notify_socket
 # requires cap chown
 #chgrp openvpn "$rundir"/notify_socket
 
-if ip -4 -netns @vpnnetns@ addr flush dev @openvpniface@ 2>/dev/null; then
-  echo "<3>control: WARNING: @openvpniface@ was still in namespace vpn"
-  ip -4 -netns @vpnnetns@ link set dev @openvpniface@ down netns "$$"
-fi
-
-# TODO should daemonize without redirecting script output to /dev/null
-# "works" if --log fails...
-
 trap 'echo "<3>control: sigterm"' TERM
 # TODO
 (
@@ -26,7 +18,7 @@ openvpn --config vpnns.conf --suppress-timestamps --user @openvpnuser@ --group @
 # need to remove so systemd does not reed pids fom another instance
 rm -f "$rundir"/openvpn-control.pid
 
-# kill notfiy_socket write if exists
+# kill notify_socket write if exists
 trap 'true' TERM
 kill -TERM 0
 
