@@ -30,9 +30,7 @@ persist-tun
 mute 20
 
 ifconfig-noexec
-#for ip address assignment
-# just print the cmd if vpn is tying to do somtehing with our ip settings
-iproute "@hookdir@/dummy-ip"
+#iproute "@hookdir@/dummy-ip"
 route-noexec
 
 #pre route hooks

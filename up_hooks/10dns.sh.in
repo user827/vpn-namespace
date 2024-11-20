@@ -19,11 +19,9 @@ fi
 cat > "$hosts" <<EOF
 $newip	vpn.local.mydomain vpn
 EOF
-chmod 644 "$hosts"
 
 cat > "$resolvconf" <<EOF
 nameserver $dnsserver
 options edns0 trust-ad
 search .
 EOF
-chmod 644 "$resolvconf"

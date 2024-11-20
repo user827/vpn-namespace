@@ -7,6 +7,12 @@ mkfifo -m666 "$rundir"/notify_socket
 # requires cap chown
 #chgrp openvpn "$rundir"/notify_socket
 
+# The tunnel needs to be in the default ns first so openvpn can tap into it
+if ip -4 -netns @vpnnetns@ addr flush dev @openvpniface@ 2>/dev/null; then
+  echo "<3>control: WARNING: @openvpniface@ was still in namespace vpn"
+  ip -4 -netns @vpnnetns@ link set dev @openvpniface@ down netns "$$"
+fi
+
 trap 'echo "<3>control: sigterm"' TERM
 # TODO
 (

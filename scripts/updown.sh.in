@@ -46,21 +46,29 @@ up() {
     init)
       #TODO ensuring we fail if we restart
       if [ "$(id -u)" != 0 ]; then
-        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev"
-        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
+        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev" || true
+        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down || true
         fail "Init after uid/gid downgrade."
       fi
 
       #kill on BUG, TODO del tuntap
-      addrs=$("$UNPRIV_IP" -netns "$ns" -4 address show dev "$dev")
+      addrs=$("$UNPRIV_IP" -netns "$ns" -4 address show dev "$dev" 2> /dev/null) || true
       if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
-        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev"
-        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
-        fail "Not uninit tap BUG"
+        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev" || true
+        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down || true
+        fail "Not uninit tap BUG vpn"
         #Kill or Restart by init
       fi
 
+      addrs=$("$UNPRIV_IP" -4 address show dev "$dev" 2> /dev/null) || true
+      if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
+        "$UNPRIV_IP" address flush dev "$dev" || true
+        "$UNPRIV_IP" link set dev "$dev" down || true
+        fail "Not uninit tap BUG"
+      fi
 
+
+      "$UNPRIV_IP" link set dev "$dev" netns "$ns"
       # TODO check the namespace has corect sysctls
       "$UNPRIV_IP" -netns "$ns" link set dev "$dev" up mtu "$tun_mtu"
       if [ -n "${ifconfig_broadcast:-}" ]; then
@@ -87,7 +95,7 @@ down() {
   case "$start" in
     init)
       "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
-      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
+      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down netns "$$"
       ;;
     *)
        #ENSURE no up-restart
