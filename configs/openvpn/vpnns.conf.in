@@ -8,24 +8,22 @@ persist-key
 nobind
 resolv-retry infinite
 
-# insecures
-# but this is a foreign option in linux and a useful one
+# insecure? but this is a foreign option in linux and a useful one
 #pull-filter ignore "dhcp-option DNS "
 pull-filter reject "setenv "
 
 #keepalive 3 10
-# not updated anyhmore with a pull so a high value is initially set
+# not updated anymore with pull so a high value is initially set
 ping-exit 60
 ping 3
 pull-filter ignore "ping-restart "
-# tell systemd to reload services that depend on vpn
+# exit to tell systemd to reload services that depend on vpn when the connection
+# is reset
 remap-usr1 SIGTERM
 
 # Set log file verbosity.
 verb 3
 
-#CHANGE keep pw encrypted
-#Should not be a problem when using alternate routing table
 persist-tun
 
 #mute-replay-warnings
@@ -34,7 +32,7 @@ mute 20
 
 ifconfig-noexec
 #for ip address assignment
-# just print the cmd if vpn is tying to do somthing with our ip settings
+# just print the cmd if vpn is tying to do somtehing with our ip settings
 iproute "@hookdir@/dummy-ip"
 route-noexec
 
