@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu
-echo "iproute $*"
+echo "iproute $*" >&2
 if [ "$EUID" = 0 ]; then
   /usr/bin/ip "$@"
 else

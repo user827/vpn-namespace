@@ -1,3 +1,3 @@
 #!/bin/bash
 set -eu
-echo "dummyip $*"
+echo "dummyip $*" >&2
