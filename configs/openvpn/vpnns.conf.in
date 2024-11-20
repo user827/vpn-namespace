@@ -12,7 +12,6 @@ resolv-retry infinite
 #pull-filter ignore "dhcp-option DNS "
 pull-filter reject "setenv "
 
-#keepalive 3 10
 # not updated anymore with pull so a high value is initially set
 ping-exit 60
 ping 3

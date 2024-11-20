@@ -14,9 +14,9 @@ ExecStart=@BINDIR@/ip -netns @vpnnetns@ link set dev lo up
 # disable ipv6 by default for all interfaces except lo
 # corrects problem with libvirtd using ipv6 without specifying ipv6 accept rules
 ExecStart=@BINDIR@/ip netns exec @vpnnetns@ sysctl -w "net.ipv6.conf.default.disable_ipv6=1"
-ExecStart=@BINDIR@/ip netns exec @vpnnetns@ sysctl -p /usr/lib/sysctl.d/80-network-hardening.conf
-ExecStart=@BINDIR/ip netns exec @vpnnetns@ nft -f /etc/nftables.vpnns.conf
-ExecStart=@BINDIR/ip netns exec @vpnnetns@ @PKGLIBDIR@/filesystem-checks.sh
+ExecStart=@BINDIR@/ip netns exec @vpnnetns@ sysctl --ignore -p /usr/lib/sysctl.d/80-network-hardening.conf
+ExecStart=@BINDIR@/ip netns exec @vpnnetns@ nft -f /etc/nftables.vpnns.conf
+ExecStart=@BINDIR@/ip netns exec @vpnnetns@ @PKGLIBDIR@/filesystem-checks.sh
 ExecStop=@BINDIR@/ip netns del @vpnnetns@
 SyslogIdentifier=vpnns
 
