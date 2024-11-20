@@ -61,7 +61,7 @@ sudoersdir = $(sysconfdir)/sudoers.d
 sudoers_DATA = configs/sudoers.d/vpnns
 EXTRA_DIST += configs/sudoers.d/vpnns.in
 
-nftablesconfdir = $(sysconfdir)/nftables.d
+nftablesconfdir = $(sysconfdir)/nftables.defaultns.d
 dist_nftablesconf_DATA = configs/nftables/vpn-users.conf
 
 tmpfilesdir = $(libdir)/tmpfiles.d

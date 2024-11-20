@@ -17,6 +17,7 @@ OVERVIEW:
 - configure /etc/nftables.conf
     - define vpn_users = { user1, user2, ... }
       to disallow vpn users from using the default network ns
+    - source /etc/nftables.defaultns.d
 - configure /etc/openvpn/vpnns.conf
     - Merge remote settings to the configuration
 - enable
