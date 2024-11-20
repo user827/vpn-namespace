@@ -1,0 +1,28 @@
+#!/bin/sh
+
+fail() {
+  log_fatal "$@"
+  exit 4
+}
+
+# Systemd logging
+
+log_fatal() {
+  printf "<2>%s\n" "$*" >&2
+}
+
+log_error() {
+  printf "<3>%s\n" "$*" >&2
+}
+
+log_warn() {
+  printf "<4>%s\n" "$*" >&2
+}
+
+log_notice() {
+  printf "<5>%s\n" "$*"
+}
+
+log_info() {
+  printf "<6>%s\n" "$*"
+}

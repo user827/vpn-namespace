@@ -1,0 +1,54 @@
+#!/bin/sh
+set -eu
+
+. "@hookdir@/functions.sh"
+
+failures=0
+# TODO use this
+insertfu() {
+  local ret=0
+  local line="$1" file="$2"
+  grep -eq "^$line$" "$file" || ret=$?
+  if [ "$ret" != 1 ]; then
+    log error "$file: missing $line"
+    failures=$((failures+1))
+  fi
+}
+
+# TODO prevent other namespaces seeing our ip
+#chmod 750 "@LOCALSTATEDIR@/lib/dhclient"
+
+# check hostname is correct
+ret=0
+grep -q '^@HOSTNAME@$' /etc/hostname || ret=$?
+if [ "$ret" != 0 ]; then
+  log error "/etc/hostname: @HOSTNAME@"
+  failures=$((failures+1))
+fi
+
+# nsswitch. mymachines should be after files because it is not namespace aware
+# force the dns resolution to go throught the right network iface
+ret=0
+grep -q '^hosts: files mymachines myhostname dns$' /etc/nsswitch.conf || ret=$?
+if [ "$ret" != 0 ]; then
+  log error "/etc/nsswitch.conf: hosts should be: files mymachines dns"
+  failures=$((failures+1))
+fi
+
+# hosts
+hn="$(hostname --fqdn)"
+if [ "$hn" != "@HOSTNAME@.@DOMAINNAME@" ]; then
+  log error "hostname: $hn != @HOSTNAME@.@DOMAINNAME@"
+  failures=$((failures+1))
+fi
+
+ret=0
+grep -q '^@includedir /etc/sudoers.d$' /etc/sudoers || ret=$?
+if [ "$ret" != 0 ]; then
+  log error '/etc/sudoers: missing #includedir /etc/sudoers.d'
+  failures=$((failures+1))
+fi
+
+if [ "$failures" != 0 ]; then
+  exit "$failures"
+fi

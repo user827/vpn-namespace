@@ -1,0 +1,137 @@
+#!/bin/bash
+set -eu
+
+# NOTE that failure here terminates openvpn
+
+export HOOKDIR="@hookdir@"
+
+vpn_rundir=@openvpnrundir@
+
+. "$HOOKDIR"/functions.sh
+
+UNPRIV_IP="$HOOKDIR/unpriv-ip"
+
+exit_func() {
+  local ret=$?
+  if [ $ret != 0 ]; then
+    log_error "Aborting on error $ret".
+  fi
+}
+
+# Openvpn does not exit by default if errors occur in route scripts
+#NOTE use only on route_up start
+exit_func_term() {
+  local ret=$?
+  if [ $ret != 0 ]; then
+    log_error "Aborting on error $ret".
+    if read -r pid < "$vpn_rundir"/openvpn-vpnns.pid; then
+      #Does not close tun kill -ABRT "$pid"
+      kill -TERM "$pid"
+    fi
+  fi
+}
+
+trap exit_func 0
+
+log_info "$0 $*"
+
+
+ns=@vpnnetns@
+
+up() {
+  local "start=$6"
+
+  case "$start" in
+  #NOTE inits always when ip changes
+    init)
+      #TODO ensuring we fail if we restart
+      if [ "$(id -u)" != 0 ]; then
+        "$UNPRIV_IP" address flush dev "$dev"
+        "$UNPRIV_IP" link set dev "$dev" down
+        fail "Init after uid/gid downgrade."
+      fi
+
+      #kill on BUG, TODO del tuntap
+      addrs=$(ip -4 address show dev "$dev")
+      if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
+        ip address flush dev "$dev"
+        ip link set dev "$dev" down
+        fail "Not uninit tap BUG"
+        #Kill or Restart by init
+      fi
+
+
+      "$UNPRIV_IP" link set dev "$dev" netns "$ns"
+      # Settings have been lost on change to namespace?
+      # TODO check the namespace has corect sysctls
+      # sync with openvpn-tuntap.service.in
+      "$UNPRIV_IP" netns exec "$ns" @BINDIR@/sysctl -w "net.ipv6.conf.$dev.disable_ipv6=1"
+      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" up mtu "$tun_mtu"
+      if [ -n "${ifconfig_broadcast:-}" ]; then
+        "$UNPRIV_IP" -4 -netns "$ns" addr add "$ifconfig_local/${ifconfig_netmask:-30}" brd "$ifconfig_broadcast" dev "$dev"
+      else
+        "$UNPRIV_IP" -4 -netns "$ns" addr add "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
+      fi
+
+      #Don't allow failure
+      for f in "$HOOKDIR"/up_hooks/*; do
+        [ -f "$f" ] && "$f" "$ifconfig_local"
+      done
+      ;;
+    *)
+       #ENSURE no up-restart
+       fail Unknown arg "$start"
+       ;;
+  esac
+}
+
+down() {
+  local "start=$6"
+
+  case "$start" in
+    init)
+      "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
+      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down netns "$$"
+      ;;
+    *)
+       #ENSURE no up-restart
+       fail unknown arg "$start"
+      ;;
+  esac
+}
+
+route_up() {
+  trap exit_func_term 0
+  [ $# -eq 0 ] || fail "Args $# != 0"
+
+  # NOTE default should be last so that rgw connections go to blackhole that
+  # should go to specific routes but that are not setup yet
+  "$UNPRIV_IP" -4 -netns "$ns" route add default via "$route_vpn_gateway" dev "$dev" proto static
+
+  for f in "$HOOKDIR"/route_up_hooks/*; do
+    [ -f "$f" ] || continue
+    "$f" "$ifconfig_local"
+  done
+}
+
+route_pre_down() {
+  [ $# -eq 6 ] || fail "Args $# != 6"
+  for f in "$HOOKDIR"/route_down_hooks/*; do
+    [ -f "$f" ] || break
+    "$f" || log_error "$f: error"
+  done
+}
+
+case "$script_type" in
+  up)
+    up "$@" ;;
+  route-up)
+    route_up "$@" ;;
+  route-pre-down)
+    route_pre_down "$@" ;;
+  down)
+    down "$@" ;;
+  *)
+    fail unknown script_type "$script_type"
+    ;;
+esac

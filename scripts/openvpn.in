@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eu
+
+rundir=@openvpnrundir@
+rm -f "$rundir"/notify_socket
+mkfifo -m666 "$rundir"/notify_socket
+# requires cap chown
+#chgrp openvpn "$rundir"/notify_socket
+
+if ip -4 -netns @vpnnetns@ addr flush dev @openvpniface@ 2>/dev/null; then
+  echo "<3>control: WARNING: @openvpniface@ was still in namespace vpn"
+  ip -4 -netns @vpnnetns@ link set dev @openvpniface@ down netns "$$"
+fi
+
+# TODO should daemonize without redirecting script output to /dev/null
+# "works" if --log fails...
+
+trap 'echo "<3>control: sigterm"' TERM
+# TODO
+(
+# needs pgroup to be killed?
+trap 'echo "<5>subcontrol: openvpn sigterm"' TERM
+# is reset in subshell!
+ret=0
+openvpn --config vpnns.conf --suppress-timestamps --user @openvpnuser@ --group network --writepid "$rundir"/openvpn-vpnns.pid || ret=$?
+# need to remove so systemd does not reed pids fom another instance
+rm -f "$rundir"/openvpn-control.pid
+
+# kill notfiy_socket write if exists
+trap 'true' TERM
+kill -TERM 0
+
+exit "$ret"
+) &
+pid=$!
+
+( echo x > "$rundir"/notify_socket ) &
+ret=0
+wait $! || ret=$?
+
+if [ "$ret" -ne 0 ]; then
+  # was signaled
+  echo "<3>control: openvpn startup failed"
+  ret=10
+  wait "$pid" || ret=$?
+  exit "$ret"
+else
+  echo "$pid" > "$rundir"/openvpn-control.pid
+  echo "<5>control: openvpn startup succeeded"
+fi

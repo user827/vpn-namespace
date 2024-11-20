@@ -1,0 +1,36 @@
+[Unit]
+Description=OpenVPN connection in vpnns
+# Network-pre includes nftables.service
+After=network-online.target network-pre.target nss-lookup.target vpnns-namespace.service
+Wants=network-online.target
+Requires=openvpn-tuntap.service vpnns-namespace.service
+After=openvpn-tuntap.service
+Documentation=man:openvpn(8)
+Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
+Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+
+[Service]
+# We have to restart with auth-failure too, as the provider fails.
+Restart=always
+# Ensure greater than of the services that depend this. Or we get trransaction is destructive?
+RestartSec=2m
+#ENSURE greater than configured services inside openvpn hooks
+TimeoutSec=180
+
+# Don't do notify as systemd does it before its's really ready
+Type=forking
+
+ExecStart=@PKGLIBDIR@/openvpn
+PIDFile=/run/openvpn/openvpn-control.pid
+
+WorkingDirectory=/etc/openvpn
+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN
+#LimitNPROC=30
+PrivateTmp=true
+DeviceAllow=/dev/null rw
+DeviceAllow=/dev/net/tun rw
+LimitNPROC=100
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

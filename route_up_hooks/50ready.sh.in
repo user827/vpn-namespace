@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+. "$HOOKDIR"/functions.sh
+
+log_notice "$0: connection ready"
+
+rundir=@openvpnrundir@
+read -r NOTIFY_SOCKET < "$rundir"/notify_socket

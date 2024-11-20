@@ -1,0 +1,29 @@
+#!/bin/sh
+set -euf
+
+. "$HOOKDIR"/functions.sh
+
+log_notice "$0: setting domain name"
+
+#TODO this could be in ready hooks too?
+
+newip=$1
+resolvconf=/etc/netns/@vpnnetns@/resolv.conf
+hosts=/etc/netns/@vpnnetns@/hosts
+dnsserver=${foreign_option_1#"dhcp-option DNS "}
+
+if [ "$dnsserver" = "$foreign_option_1" ]; then
+  echo "dns nameserver not in foreign_option_1: $foreign_option_1" >&2
+fi
+
+cat > "$hosts" <<EOF
+$newip	vpn.local.mydomain vpn
+EOF
+chmod 644 "$hosts"
+
+cat > "$resolvconf" <<EOF
+nameserver $dnsserver
+options edns0 trust-ad
+search .
+EOF
+chmod 644 "$resolvconf"

@@ -1,0 +1,14 @@
+#
+# /etc/hosts: static lookup table for host names for vpn
+#
+
+# see
+# https://lists.debian.org/debian-devel/2013/07/msg00809.html
+
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	localhost.localdomain	localhost
+::1		localhost.localdomain	localhost
+127.0.0.1	@HOSTNAME@.@DOMAINNAME@	@HOSTNAME@
+::1     	@HOSTNAME@.@DOMAINNAME@	@HOSTNAME@
+
+# End of file

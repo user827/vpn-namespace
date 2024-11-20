@@ -1,0 +1,13 @@
+[Unit]
+Wants=network-pre.target
+Before=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# tun interface is initially created in the default network namespace
+ExecStart=@BINDIR@/openvpn --mktun --dev @openvpniface@ --dev-type tun --user @openvpnuser@ --group @openvpnuser@
+# Sysctl settings area already set by default dependency sysinit.target
+#ExecStart=@PKGLIBDIR@/ifaceapplycommonsysctls.sh @openvpniface@
+ExecStart=@BINDIR@/sysctl -w "net.ipv6.conf.@openvpniface@.disable_ipv6=1"
+ExecStop=@BINDIR@/openvpn --rmtun --dev @openvpniface@

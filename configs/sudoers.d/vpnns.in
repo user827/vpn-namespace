@@ -1,0 +1,2 @@
+@openvpnuser@ ALL=(root) NOPASSWD: @BINDIR@/ip
+Defaults:@openvpnuser@ !requiretty

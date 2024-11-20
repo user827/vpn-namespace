@@ -1,0 +1,34 @@
+pre_remove() {
+  :
+}
+
+pre_upgrade() {
+  pre_remove "$@"
+}
+
+
+post_install() {
+  systemctl daemon-reload
+
+  cat <<EOF
+OVERVIEW:
+- check settings ok
+- create /etc/nftables.vpnns.conf
+- configure /etc/nftables.conf
+    - define vpn_users = { user1, user2, ... }
+      to disallow vpn users from using the default network ns
+- configure /etc/openvpn/vpnns.conf
+    - Merge remote settings to the configuration
+- enable
+     systemctl enable openvpn-vpnns.service
+
+
+netutils
+  will automatically be changed from setuid to use capabilities
+EOF
+}
+
+
+post_upgrade() {
+  post_install "$1"
+}
