@@ -3,7 +3,7 @@
 /configs/sudoers.d/vpnns
 /configs/tmpfiles.d/vpnns.conf
 /configs/vpnns.conf
-/configure
+/configure*
 /functions.sh
 /netns/hosts
 /openvpn
