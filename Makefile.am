@@ -36,6 +36,11 @@ CLEANFILES = $(in_files:.in=)
 
 bash_scripts =
 
+bins = nse.in
+bin_SCRIPTS = $(bins:.in=)
+EXTRA_DIST += $(bins)
+bash_scripts += ${bins}
+
 inscripts = scripts/updown.sh.in \
 	    scripts/functions.sh.in \
 	    scripts/openvpn.in \

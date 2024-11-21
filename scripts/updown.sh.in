@@ -45,21 +45,13 @@ up() {
   #NOTE inits always when ip changes
     init)
       #kill on BUG, TODO del tuntap
-      addrs=$("$UNPRIV_IP" -netns "$ns" -4 address show dev "$dev" 2> /dev/null) || true
-      if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
-        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev" || true
-        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down || true
-        fail "Not uninit tap BUG vpn"
-        #Kill or Restart by init
-      fi
-
       addrs=$("$UNPRIV_IP" -4 address show dev "$dev" 2> /dev/null) || true
       if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then
         "$UNPRIV_IP" address flush dev "$dev" || true
         "$UNPRIV_IP" link set dev "$dev" down || true
         fail "Not uninit tap BUG"
+        #Kill or Restart by init
       fi
-
 
       "$UNPRIV_IP" link set dev "$dev" netns "$ns"
       # TODO check the namespace has corect sysctls

@@ -1,2 +1,5 @@
 @openvpnuser@ ALL=(root) NOPASSWD: @BINDIR@/ip
 Defaults:@openvpnuser@ !requiretty
+
+Cmnd_Alias NSE = /usr/bin/ip netns exec vpn /usr/bin/setcuruser *
+Defaults!NSE !env_reset, !secure_path, !requiretty, closefrom_override, !use_pty, !pam_session, !set_logname, preserve_groups, closefrom=9000
