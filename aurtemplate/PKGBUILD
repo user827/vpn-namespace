@@ -6,7 +6,7 @@ pkgrel=1
 pkgdesc='OpenVPN in a network namespace'
 arch=('any')
 depends=(
-    openvpn nftables iproute2 network-hardening
+    openvpn nftables iproute2 network-hardening arch-setup
 )
 makedepends=(
     git
