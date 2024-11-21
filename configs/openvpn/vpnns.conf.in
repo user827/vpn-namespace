@@ -1,12 +1,10 @@
 # Set provider specific settings here
 
 
-#auth-nocache
 dev @openvpniface@
 script-security 2
-persist-key
 nobind
-resolv-retry infinite
+persist-tun
 
 # insecure? but this is a foreign option in linux and a useful one
 #pull-filter ignore "dhcp-option DNS "
@@ -14,8 +12,6 @@ pull-filter reject "setenv "
 
 # Set log file verbosity.
 verb 3
-
-persist-tun
 
 #mute-replay-warnings
 # Silence repeating messages
