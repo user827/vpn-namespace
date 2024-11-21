@@ -35,9 +35,7 @@ prepare() {
   ./autogen.sh
   ./configure \
     --sysconfdir=/etc \
-    --localstatedir=/var \
-    --with-hostname=hoi \
-    --with-domainname=dom
+    --localstatedir=/var
 }
 
 #build() {

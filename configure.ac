@@ -31,18 +31,4 @@ AC_CONFIG_FILES([
   #src/hooks/altroute_vpn4
 #])
 
-AC_ARG_WITH([hostname],
-            [AS_HELP_STRING([--with-hostname], [The desired hostname [[default: unknown]]])],
-            [hostname="$withval"], [hostname=unknown])
-my_HOSTNAME="$hostname"
-
-AC_ARG_WITH([domainname],
-            [AS_HELP_STRING([--with-domainname],
-                           [The desired domainname [[default: unknown]]])],
-            [domainname="$withval"], [domainname=unknown])
-my_DOMAINNAME="$domainname"
-
-AC_SUBST([my_HOSTNAME])
-AC_SUBST([my_DOMAINNAME])
-
 AC_OUTPUT

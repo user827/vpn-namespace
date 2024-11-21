@@ -24,9 +24,6 @@ openvpngroup = network
 openvpniface = tun_vpn
 netnsentercmd = /usr/bin/ip netns exec $(vpnnetns)
 
-hostname = ${my_HOSTNAME}
-domainname = ${my_DOMAINNAME}
-
 defaultnetns = default
 vpnnetns = vpn
 
@@ -111,8 +108,6 @@ CHECK_OUTPUTVARS_PROCESS = ! grep '@[^ ]*@'
 substitutions = \
 		'|BINDIR=$(bindir)|' \
 		'|CACHEDIR=$(cachedir)|' \
-		'|DOMAINNAME=$(domainname)|' \
-		'|HOSTNAME=$(hostname)|' \
 		'|LIBDIR=$(libdir)|' \
 		'|LOCALSTATEDIR=$(localstatedir)|' \
 		'|PKGCACHEDIR=$(pkgcachedir)|' \

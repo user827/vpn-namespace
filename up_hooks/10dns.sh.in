@@ -26,10 +26,13 @@ if [ -n "${foreign_option_2:-}" ]; then
   fi
 fi
 
+hn=$(hostname)
+hnfqdn=$(hostname --fqdn)
+
 cat > "$hosts" <<EOF
 $newip	vpn.local.mydomain vpn
 127.0.0.1	localhost
-127.0.1.1	@HOSTNAME@.@DOMAINNAME@	@HOSTNAME@
+127.0.1.1	$hnfqdn	$hn
 ::1 ip6-localhost ip6-loopback
 EOF
 chmod 644 "$hosts"
