@@ -8,20 +8,36 @@ log_notice "$0: setting domain name"
 #TODO this could be in ready hooks too?
 
 newip=$1
-resolvconf=/etc/netns/@vpnnetns@/resolv.conf
-hosts=/etc/netns/@vpnnetns@/hosts
-dnsserver=${foreign_option_1#"dhcp-option DNS "}
-
-if [ "$dnsserver" = "$foreign_option_1" ]; then
+resolvconf=@PKGRUNDIR@/resolv.conf
+hosts=@PKGRUNDIR@/hosts
+dnsserver1=${foreign_option_1#"dhcp-option DNS "}
+if [ "$dnsserver1" = "$foreign_option_1" ]; then
   echo "dns nameserver not in foreign_option_1: $foreign_option_1" >&2
+fi
+dnsserver1="nameserver $dnsserver1"
+
+dnsserver2=
+if [ -n "${foreign_option_2:-}" ]; then
+  dnsserver2=${foreign_option_2#"dhcp-option DNS "}
+  if [ "$dnsserver2" = "$foreign_option_2" ]; then
+    dnsserver2=
+  else
+    dnsserver2="nameserver $dnsserver2"
+  fi
 fi
 
 cat > "$hosts" <<EOF
 $newip	vpn.local.mydomain vpn
+127.0.0.1	localhost
+127.0.1.1	@HOSTNAME@.@DOMAINNAME@	@HOSTNAME@
+::1 ip6-localhost ip6-loopback
 EOF
+chmod 644 "$hosts"
 
 cat > "$resolvconf" <<EOF
-nameserver $dnsserver
+$dnsserver1
+${dnsserver2:-}
 options edns0 trust-ad
 search .
 EOF
+chmod 644 "$resolvconf"

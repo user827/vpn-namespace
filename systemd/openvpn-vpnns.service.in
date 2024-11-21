@@ -23,14 +23,16 @@ Type=forking
 ExecStart=@PKGLIBDIR@/openvpn
 PIDFile=/run/openvpn/openvpn-control.pid
 
+User=@openvpnuser@
+Group=@openvpngroup@
 WorkingDirectory=/etc/openvpn
-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN CAP_DAC_OVERRIDE
-#LimitNPROC=30
+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN
+LimitNPROC=30
 PrivateTmp=true
 DeviceAllow=/dev/null rw
 DeviceAllow=/dev/net/tun rw
-LimitNPROC=100
 ProtectHome=true
+ProtectSystem=true
 
 [Install]
 WantedBy=multi-user.target

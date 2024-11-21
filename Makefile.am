@@ -15,6 +15,7 @@ confmode = 0644
 cachedir = ${localstatedir}/cache
 pkgcachedir = ${cachedir}/${prog}
 pkgsysconfdir = ${sysconfdir}/${prog}
+pkgrundir = /run/$(prog)
 
 #TODO actually use these
 openvpnuser = openvpn
@@ -69,10 +70,7 @@ tmpfiles_DATA = configs/tmpfiles.d/vpnns.conf
 EXTRA_DIST += configs/tmpfiles.d/vpnns.conf.in
 
 ipnetnsdir = $(sysconfdir)/netns/$(vpnnetns)
-ipnetns_DATA = configs/netns/hosts \
-	       configs/netns/resolv.conf \
-	       configs/netns/nsswitch.conf
-EXTRA_DIST += netns/hosts.in
+ipnetns_DATA = configs/netns/nsswitch.conf
 
 insystemd = systemd/openvpn-vpnns.service.in \
 	    systemd/vpnns-namespace.service \
@@ -83,10 +81,11 @@ EXTRA_DIST += $(insystemd)
 
 # promised to be executed after the file is installed
 install-data-hook:
+	chown $(openvpnuser):$(openvpngroup) ${DESTDIR}${openvpnconfdir}/vpnns.conf
 	chmod -R o= ${DESTDIR}${openvpnconfdir}/vpnns.conf
 	chmod -R o= ${DESTDIR}${sudoersdir}
-	chown openvpn:openvpn ${DESTDIR}${sysconfdir}/netns/$(vpnnetns)/resolv.conf
-	chown openvpn:openvpn ${DESTDIR}${sysconfdir}/netns/$(vpnnetns)/hosts
+	ln -s $(pkgrundir)/resolv.conf ${DESTDIR}${sysconfdir}/netns/$(vpnnetns)/resolv.conf
+	ln -s $(pkgrundir)/hosts ${DESTDIR}${sysconfdir}/netns/$(vpnnetns)/hosts
 
 check_bash_scripts = $(addprefix check_,$(bash_scripts))
 .PHONY: ${check_bash_scripts}
@@ -113,7 +112,7 @@ substitutions = \
 		'|LOCALSTATEDIR=$(localstatedir)|' \
 		'|PKGCACHEDIR=$(pkgcachedir)|' \
 		'|PKGLIBDIR=$(pkglibdir)|' \
-		'|PKGRUNDIR=/run/$(prog)|' \
+		'|PKGRUNDIR=$(pkgrundir)|' \
 		'|PKGSYSCONFDIR=$(pkgsysconfdir)|' \
 		'|PROG=$(prog)|' \
 		'|RUNDIR=/run|' \

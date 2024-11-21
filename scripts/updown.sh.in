@@ -44,13 +44,6 @@ up() {
   case "$start" in
   #NOTE inits always when ip changes
     init)
-      #TODO ensuring we fail if we restart
-      if [ "$(id -u)" != 0 ]; then
-        "$UNPRIV_IP" -netns "$ns" address flush dev "$dev" || true
-        "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down || true
-        fail "Init after uid/gid downgrade."
-      fi
-
       #kill on BUG, TODO del tuntap
       addrs=$("$UNPRIV_IP" -netns "$ns" -4 address show dev "$dev" 2> /dev/null) || true
       if [ "$(printf %s\\n "$addrs" | grep -cE '^\s+inet\s')" -ne 0 ]; then

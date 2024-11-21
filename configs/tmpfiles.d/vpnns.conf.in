@@ -1,1 +1,4 @@
-d @openvpnrundir@ 0775 root @openvpnuser@
+d @openvpnrundir@ 0775 @openvpnuser@ @openvpngroup@
+d @PKGRUNDIR@ 0755 root root
+f @PKGRUNDIR@/hosts 0664 @openvpnuser@ @openvpngroup@
+f @PKGRUNDIR@/resolv.conf 0664 @openvpnuser@ @openvpngroup@

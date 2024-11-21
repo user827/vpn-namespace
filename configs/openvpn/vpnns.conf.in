@@ -12,14 +12,6 @@ resolv-retry infinite
 #pull-filter ignore "dhcp-option DNS "
 pull-filter reject "setenv "
 
-# not updated anymore with pull so a high value is initially set
-ping-exit 60
-ping 3
-pull-filter ignore "ping-restart "
-# exit to tell systemd to reload services that depend on vpn when the connection
-# is reset
-remap-usr1 SIGTERM
-
 # Set log file verbosity.
 verb 3
 
