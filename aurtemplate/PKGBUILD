@@ -1,7 +1,7 @@
 # Maintainer: me
 
 pkgname=vpnns
-pkgver=1.0.0.r23.gc3087fe
+pkgver=1.0.0.r12.gb0df23c
 pkgrel=1
 pkgdesc='OpenVPN in a network namespace'
 arch=('any')
@@ -18,8 +18,8 @@ backup=(
 )
 license=('Apache')
 url="https://github.com/user827/vpn-namespace.git"
-#source=("$pkgname::git+$url?signed")
-source=("$pkgname::git+file://$PWD?signed")
+source=("$pkgname::git+$url?signed")
+#source=("$pkgname::git+file://$PWD?signed")
 validpgpkeys=(D47AF080A89B17BA083053B68DFE60B7327D52D6) # user827
 sha256sums=(SKIP)
 
