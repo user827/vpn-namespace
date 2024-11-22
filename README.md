@@ -3,7 +3,7 @@ namespace.
 
 # Dependencies
 
-* `setcuruser` script from [arch-setup](https://github.com/user827/arch-setup/blob/main/bin/setcuruser)
+* `setcuruser` script from [network-hardening](https://github.com/user827/network-hardening/blob/main/bin/setcuruser)
 * [Network hardening sysctls](https://github.com/user827/network-hardening/blob/main/sysctls.conf)
 
 # Configure
