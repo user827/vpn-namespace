@@ -82,7 +82,8 @@ down() {
   case "$start" in
     init)
       "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
-      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down netns "$$"
+      "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
+      sudo "$HOOKDIR"/move_to_default_ns.sh "$ns" "$dev"
       ;;
     *)
        #ENSURE no up-restart

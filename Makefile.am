@@ -44,7 +44,7 @@ inscripts = scripts/updown.sh.in \
 	    scripts/filesystem-checks.sh.in
 scriptdir = $(pkglibdir)
 script_SCRIPTS = $(inscripts:.in=)
-dist_script_SCRIPTS = scripts/unpriv-ip scripts/dummy-ip
+dist_script_SCRIPTS = scripts/unpriv-ip scripts/dummy-ip scripts/move_to_default_ns.sh
 EXTRA_DIST += $(inscripts)
 bash_scripts += ${script_SCRIPTS} ${dist_script_SCRIPTS}
 

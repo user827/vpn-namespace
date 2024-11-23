@@ -1,4 +1,4 @@
-@openvpnuser@ ALL=(root) NOPASSWD: @BINDIR@/ip
+@openvpnuser@ ALL=(root) NOPASSWD: @BINDIR@/ip, @PKGLIBDIR@/move_to_default_ns.sh
 Defaults:@openvpnuser@ !requiretty
 
 Cmnd_Alias NSE = /usr/bin/ip netns exec vpn /usr/bin/setcuruser *
