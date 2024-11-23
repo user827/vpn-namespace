@@ -13,6 +13,11 @@ if ip -4 -netns @vpnnetns@ addr flush dev @openvpniface@ 2>/dev/null; then
   ip -4 -netns @vpnnetns@ link set dev @openvpniface@ down netns "$$"
 fi
 
+if ! ip link show dev @openvpniface@; then
+  echo "<3>control: FATAL: @openvpniface@ not found"
+  exit 3
+fi
+
 trap 'echo "<3>control: sigterm"' TERM
 # TODO
 (

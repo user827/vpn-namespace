@@ -32,8 +32,10 @@ exit_func_term() {
 }
 
 trap exit_func 0
+trap 'log_notice "control: sigterm"' TERM
+trap 'log_notice "control: sighup"' HUP
 
-log_info "$0 $*"
+log_notice "$0 $*"
 
 
 ns=@vpnnetns@
