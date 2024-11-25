@@ -1,6 +1,6 @@
 # Maintainer: me
 
-pkgname=vpnns
+pkgname=vpn-namespace
 pkgver=1.0.0.r12.gb0df23c
 pkgrel=1
 pkgdesc='OpenVPN in a network namespace'
@@ -12,9 +12,8 @@ makedepends=(
     git
 )
 backup=(
-"etc/netns/$pkgname/hosts"
-"etc/netns/$pkgname/resolv.conf"
-"etc/openvpn/$pkgname.conf"
+"etc/netns/vpn/nsswitch.conf"
+"etc/openvpn/vpnns.conf"
 )
 license=('Apache')
 url="https://github.com/user827/vpn-namespace.git"

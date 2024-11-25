@@ -3,6 +3,8 @@
 # # atleast when using the always-build flag
 .NOTPARALLEL:
 
+-include $(srcdir)/Makefile.inc
+
 SED_DEPENDS = $(srcdir)/Makefile
 
 prog = ${PACKAGE_NAME}
@@ -75,7 +77,7 @@ ipnetnsdir = $(sysconfdir)/netns/$(vpnnetns)
 ipnetns_DATA = configs/netns/nsswitch.conf
 
 insystemd = systemd/openvpn-vpnns.service.in \
-	    systemd/vpnns-namespace.service \
+	    systemd/vpn-namespace.service \
 	    systemd/openvpn-tuntap.service.in
 systemddir = $(libdir)/systemd/system
 systemd_DATA = $(insystemd:.in=)

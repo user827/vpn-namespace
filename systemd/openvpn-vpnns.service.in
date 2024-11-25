@@ -1,9 +1,9 @@
 [Unit]
 Description=OpenVPN connection in vpnns
 # Network-pre includes nftables.service
-After=network-online.target network-pre.target nss-lookup.target vpnns-namespace.service
+After=network-online.target network-pre.target nss-lookup.target vpn-namespace.service
 Wants=network-online.target
-Requires=openvpn-tuntap.service vpnns-namespace.service
+Requires=openvpn-tuntap.service vpn-namespace.service
 After=openvpn-tuntap.service
 Documentation=man:openvpn(8)
 Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
