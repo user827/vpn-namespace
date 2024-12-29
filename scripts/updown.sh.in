@@ -81,7 +81,9 @@ down() {
 
   case "$start" in
     init)
-      "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
+      if [ -n "${ifconfig_local:-}" ]; then
+        "$UNPRIV_IP" -4 -netns "$ns" addr del "$ifconfig_local/${ifconfig_netmask:-30}" dev "$dev"
+      fi
       "$UNPRIV_IP" -netns "$ns" link set dev "$dev" down
       sudo "$HOOKDIR"/move_to_default_ns.sh "$ns" "$dev"
       ;;
@@ -113,6 +115,7 @@ route_pre_down() {
   done
 }
 
+log_notice "script_type: $script_type"
 case "$script_type" in
   up)
     up "$@" ;;
