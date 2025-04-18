@@ -10,6 +10,13 @@ persist-tun
 #pull-filter ignore "dhcp-option DNS "
 pull-filter reject "setenv "
 
+# exit to tell systemd to reload services that depend on vpn when the connection
+# is reset
+ping-exit 60
+#ping 3
+pull-filter ignore "ping-restart "
+remap-usr1 SIGTERM
+
 # Set log file verbosity.
 verb 3
 
